@@ -1,0 +1,640 @@
+VUE JS CRUD operations 
+---------------------
+
+1. Project Setup
+ပထမဆုံး Vue 2 project တစ်ခု စတင်မယ်။
+
+bash
+Copy
+vue create vue2-crud-example
+ပြီးရင် JSON Server ကို install လုပ်မယ်။
+
+bash
+Copy
+npm install -g json-server
+2. Project Structure
+Project structure က အောက်ပါအတိုင်း ဖြစ်ပါတယ်။
+
+Copy
+vue2-crud-example/
+│
+├── public/
+│   └── index.html
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   └── UserList.vue
+│   ├── views/
+│   │   └── Home.vue
+│   ├── App.vue
+│   ├── main.js
+│   └── router.js
+├── db.json
+├── package.json
+└── README.md
+3. JSON Server Setup
+db.json ဖိုင်ကို အောက်ပါအတိုင်း ဖန်တီးပါမယ်။
+
+json
+Copy
+{
+  "users": [
+    { "id": 1, "name": "John Doe", "email": "john@example.com" },
+    { "id": 2, "name": "Jane Doe", "email": "jane@example.com" }
+  ]
+}
+JSON Server ကို စတင်မယ်။
+
+bash
+Copy
+json-server --watch db.json
+ဒါဆိုရင် http://localhost:3000/users မှာ API endpoint တစ်ခု ရပါပြီ။
+
+4. Vue Component Setup
+src/components/UserList.vue ဖိုင်ကို အောက်ပါအတိုင်း ဖန်တီးပါမယ်။
+
+vue
+Copy
+<template>
+  <div>
+    <h1>User List</h1>
+    <ul>
+      <li v-for="user in users" :key="user.id">
+        {{ user.name }} - {{ user.email }}
+        <button @click="deleteUser(user.id)">Delete</button>
+      </li>
+    </ul>
+    <h2>Add User</h2>
+    <form @submit.prevent="addUser">
+      <input v-model="newUser.name" placeholder="Name" required />
+      <input v-model="newUser.email" placeholder="Email" required />
+      <button type="submit">Add User</button>
+    </form>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      users: [],
+      newUser: {
+        name: '',
+        email: ''
+      }
+    };
+  },
+  created() {
+    this.fetchUsers();
+  },
+  methods: {
+    fetchUsers() {
+      fetch('http://localhost:3000/users')
+        .then(response => response.json())
+        .then(data => {
+          this.users = data;
+        });
+    },
+    addUser() {
+      fetch('http://localhost:3000/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(this.newUser)
+      })
+        .then(response => response.json())
+        .then(data => {
+          this.users.push(data);
+          this.newUser = { name: '', email: '' };
+        });
+    },
+    deleteUser(id) {
+      fetch(`http://localhost:3000/users/${id}`, {
+        method: 'DELETE'
+      })
+        .then(() => {
+          this.users = this.users.filter(user => user.id !== id);
+        });
+    }
+  }
+};
+</script>
+5. Main App Component
+src/App.vue ဖိုင်ကို အောက်ပါအတိုင်း ပြင်ဆင်ပါမယ်။
+
+vue
+Copy
+<template>
+  <div id="app">
+    <UserList />
+  </div>
+</template>
+
+<script>
+import UserList from './components/UserList.vue';
+
+export default {
+  components: {
+    UserList
+  }
+};
+</script>
+
+
+6. Testing Results
+Create (Add User): Form မှာ name နဲ့ email ထည့်ပြီး "Add User" button ကို နှိပ်ပါက user list မှာ ထပ်ပေါင်းလာပါမယ်။
+
+Read (Fetch Users): Page load ဖြစ်တာနဲ့ user list ကို fetch လုပ်ပြီး ပြပေးပါမယ်။
+
+Update (Edit User): ဒီနေရာမှာ update functionality ကို မထည့်ထားပေမယ့် အလားတူနည်းနဲ့ လုပ်ဆောင်နိုင်ပါတယ်။
+
+Delete (Delete User): Delete button ကို နှိပ်ပါက user list ထဲက user ကို ဖျက်ပေးပါမယ်။
+
+
+
+command:
+npm run serve
+
+ http://localhost:8080 မှာ Vue app ကို စမ်းသပ်နိုင်ပါပြီ။
+
+JSON Server ကို http://localhost:3000 မှာ run ထားဖို့ လိုအပ်ပါတယ်။
+command:
+json-server db.json
+
+
+
+==========================
+
+
+
+Vue 2 နဲ့ CRUD operations လုပ်မယ်ဆိုရင် JSON Server ကို backend အဖြစ် အသုံးပြုပြီး axios library ကို အသုံးပြုပါမယ်။ Project structure နဲ့ testing results တွေကိုလည်း ပြပေးသွားမှာဖြစ်ပါတယ်။
+
+1. Project Setup
+ပထမဆုံး Vue 2 project တစ်ခု စတင်မယ်။
+
+
+vue create vue2-crud-axios
+ပြီးရင် axios နဲ့ json-server ကို install လုပ်မယ်။
+
+
+npm install axios
+npm install -g json-server
+2. Project Structure
+Project structure က အောက်ပါအတိုင်း ဖြစ်ပါတယ်။
+
+Copy
+vue2-crud-axios/
+│
+├── public/
+│   └── index.html
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   └── UserList.vue
+│   ├── views/
+│   │   └── Home.vue
+│   ├── App.vue
+│   ├── main.js
+│   └── router.js
+├── db.json
+├── package.json
+└── README.md
+3. JSON Server Setup
+db.json ဖိုင်ကို အောက်ပါအတိုင်း ဖန်တီးပါမယ်။
+
+json
+Copy
+{
+  "users": [
+    { "id": 1, "name": "John Doe", "email": "john@example.com" },
+    { "id": 2, "name": "Jane Doe", "email": "jane@example.com" }
+  ]
+}
+
+
+JSON Server ကို စတင်မယ်။
+
+
+json-server --watch db.json
+ဒါဆိုရင် http://localhost:3000/users မှာ API endpoint တစ်ခု ရပါပြီ။
+
+4. Vue Component Setup
+src/components/UserList.vue ဖိုင်ကို အောက်ပါအတိုင်း ဖန်တီးပါမယ်။
+
+vue
+Copy
+<template>
+  <div>
+    <h1>User List</h1>
+    <ul>
+      <li v-for="user in users" :key="user.id">
+        {{ user.name }} - {{ user.email }}
+        <button @click="editUser(user)">Edit</button>
+        <button @click="deleteUser(user.id)">Delete</button>
+      </li>
+    </ul>
+    <h2>Add User</h2>
+    <form @submit.prevent="addUser">
+      <input v-model="newUser.name" placeholder="Name" required />
+      <input v-model="newUser.email" placeholder="Email" required />
+      <button type="submit">Add User</button>
+    </form>
+    <h2 v-if="editing">Edit User</h2>
+    <form v-if="editing" @submit.prevent="updateUser">
+      <input v-model="editUserData.name" placeholder="Name" required />
+      <input v-model="editUserData.email" placeholder="Email" required />
+      <button type="submit">Update User</button>
+      <button @click="cancelEdit">Cancel</button>
+    </form>
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      users: [],
+      newUser: {
+        name: '',
+        email: ''
+      },
+      editing: false,
+      editUserData: {
+        id: null,
+        name: '',
+        email: ''
+      }
+    };
+  },
+  created() {
+    this.fetchUsers();
+  },
+  methods: {
+    fetchUsers() {
+      axios.get('http://localhost:3000/users')
+        .then(response => {
+          this.users = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching users:', error);
+        });
+    },
+    addUser() {
+      axios.post('http://localhost:3000/users', this.newUser)
+        .then(response => {
+          this.users.push(response.data);
+          this.newUser = { name: '', email: '' };
+        })
+        .catch(error => {
+          console.error('Error adding user:', error);
+        });
+    },
+    editUser(user) {
+      this.editing = true;
+      this.editUserData = { ...user };
+    },
+    updateUser() {
+      axios.put(`http://localhost:3000/users/${this.editUserData.id}`, this.editUserData)
+        .then(response => {
+          const index = this.users.findIndex(user => user.id === response.data.id);
+          this.users.splice(index, 1, response.data);
+          this.cancelEdit();
+        })
+        .catch(error => {
+          console.error('Error updating user:', error);
+        });
+    },
+    deleteUser(id) {
+      axios.delete(`http://localhost:3000/users/${id}`)
+        .then(() => {
+          this.users = this.users.filter(user => user.id !== id);
+        })
+        .catch(error => {
+          console.error('Error deleting user:', error);
+        });
+    },
+    cancelEdit() {
+      this.editing = false;
+      this.editUserData = { id: null, name: '', email: '' };
+    }
+  }
+};
+</script>
+5. Main App Component
+src/App.vue ဖိုင်ကို အောက်ပါအတိုင်း ပြင်ဆင်ပါမယ်။
+
+vue
+Copy
+<template>
+  <div id="app">
+    <UserList />
+  </div>
+</template>
+
+<script>
+import UserList from './components/UserList.vue';
+
+export default {
+  components: {
+    UserList
+  }
+};
+</script>
+
+
+
+6. Testing Results
+Create (Add User): Form မှာ name နဲ့ email ထည့်ပြီး "Add User" button ကို နှိပ်ပါက user list မှာ ထပ်ပေါင်းလာပါမယ်။
+
+Read (Fetch Users): Page load ဖြစ်တာနဲ့ user list ကို fetch လုပ်ပြီး ပြပေးပါမယ်။
+
+Update (Edit User): Edit button ကို နှိပ်ပြီး user data ကို update လုပ်နိုင်ပါတယ်။
+
+Delete (Delete User): Delete button ကို နှိပ်ပါက user list ထဲက user ကို ဖျက်ပေးပါမယ်။
+
+
+
+command:
+npm run serve
+
+ http://localhost:8080 မှာ Vue app ကို စမ်းသပ်နိုင်ပါပြီ။
+
+JSON Server ကို http://localhost:3000 မှာ run ထားဖို့ လိုအပ်ပါတယ်။
+command:
+json-server db.json
+
+
+
+====================
+
+
+Vue 2 နဲ့ CRUD operations လုပ်မယ်ဆိုရင် JSON Server ကို backend အဖြစ် အသုံးပြုပြီး axios library ကို အသုံးပြုပါမယ်။ Project structure ကို စနစ်တကျ ဖန်တီးပြီး controller, models, routes တွေကို သီးသန့် folder တွေအောက်မှာ ထည့်သွင်းပါမယ်။ Project structure နဲ့ testing results တွေကိုလည်း ပြပေးသွားမှာဖြစ်ပါတယ်။
+
+1. Project Setup
+ပထမဆုံး Vue 2 project တစ်ခု စတင်မယ်။
+
+bash
+Copy
+vue create vue2-crud-axios-structured
+ပြီးရင် axios နဲ့ json-server ကို install လုပ်မယ်။
+
+bash
+Copy
+npm install axios
+npm install -g json-server
+2. Project Structure
+Project structure က အောက်ပါအတိုင်း ဖြစ်ပါတယ်။
+
+Copy
+vue2-crud-axios-structured/
+│
+├── public/
+│   └── index.html
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   └── ProductList.vue
+│   ├── controllers/
+│   │   └── ProductController.js
+│   ├── models/
+│   │   └── Product.js
+│   ├── routes/
+│   │   └── index.js
+│   ├── views/
+│   │   └── Home.vue
+│   ├── App.vue
+│   ├── main.js
+│   └── router.js
+├── db.json
+├── package.json
+└── README.md
+3. JSON Server Setup
+db.json ဖိုင်ကို အောက်ပါအတိုင်း ဖန်တီးပါမယ်။
+
+json
+Copy
+{
+  "products": [
+    { "id": 1, "name": "Product 1", "price": 100 },
+    { "id": 2, "name": "Product 2", "price": 200 }
+  ]
+}
+JSON Server ကို စတင်မယ်။
+
+bash
+Copy
+json-server --watch db.json
+ဒါဆိုရင် http://localhost:3000/products မှာ API endpoint တစ်ခု ရပါပြီ။
+
+4. Model Setup
+src/models/Product.js ဖိုင်ကို အောက်ပါအတိုင်း ဖန်တီးပါမယ်။
+
+javascript
+Copy
+export default class Product {
+  constructor(id, name, price) {
+    this.id = id;
+    this.name = name;
+    this.price = price;
+  }
+}
+5. Controller Setup
+src/controllers/ProductController.js ဖိုင်ကို အောက်ပါအတိုင်း ဖန်တီးပါမယ်။
+
+javascript
+Copy
+import axios from 'axios';
+import Product from '@/models/Product';
+
+const API_URL = 'http://localhost:3000/products';
+
+export default {
+  async fetchProducts() {
+    try {
+      const response = await axios.get(API_URL);
+      return response.data.map(product => new Product(product.id, product.name, product.price));
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      return [];
+    }
+  },
+  async addProduct(product) {
+    try {
+      const response = await axios.post(API_URL, product);
+      return new Product(response.data.id, response.data.name, response.data.price);
+    } catch (error) {
+      console.error('Error adding product:', error);
+      return null;
+    }
+  },
+  async updateProduct(product) {
+    try {
+      const response = await axios.put(`${API_URL}/${product.id}`, product);
+      return new Product(response.data.id, response.data.name, response.data.price);
+    } catch (error) {
+      console.error('Error updating product:', error);
+      return null;
+    }
+  },
+  async deleteProduct(id) {
+    try {
+      await axios.delete(`${API_URL}/${id}`);
+      return true;
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      return false;
+    }
+  }
+};
+6. Routes Setup
+src/routes/index.js ဖိုင်ကို အောက်ပါအတိုင်း ဖန်တီးပါမယ်။
+
+javascript
+Copy
+import Vue from 'vue';
+import Router from 'vue-router';
+import Home from '@/views/Home.vue';
+
+Vue.use(Router);
+
+export default new Router({
+  routes: [
+    {
+      path: '/',
+      name: 'Home',
+      component: Home
+    }
+  ]
+});
+7. Vue Component Setup
+src/components/ProductList.vue ဖိုင်ကို အောက်ပါအတိုင်း ဖန်တီးပါမယ်။
+
+vue
+Copy
+<template>
+  <div>
+    <h1>Product List</h1>
+    <ul>
+      <li v-for="product in products" :key="product.id">
+        {{ product.name }} - ${{ product.price }}
+        <button @click="editProduct(product)">Edit</button>
+        <button @click="deleteProduct(product.id)">Delete</button>
+      </li>
+    </ul>
+    <h2>Add Product</h2>
+    <form @submit.prevent="addProduct">
+      <input v-model="newProduct.name" placeholder="Name" required />
+      <input v-model="newProduct.price" placeholder="Price" type="number" required />
+      <button type="submit">Add Product</button>
+    </form>
+    <h2 v-if="editing">Edit Product</h2>
+    <form v-if="editing" @submit.prevent="updateProduct">
+      <input v-model="editProductData.name" placeholder="Name" required />
+      <input v-model="editProductData.price" placeholder="Price" type="number" required />
+      <button type="submit">Update Product</button>
+      <button @click="cancelEdit">Cancel</button>
+    </form>
+  </div>
+</template>
+
+<script>
+import ProductController from '@/controllers/ProductController';
+
+export default {
+  data() {
+    return {
+      products: [],
+      newProduct: {
+        name: '',
+        price: 0
+      },
+      editing: false,
+      editProductData: {
+        id: null,
+        name: '',
+        price: 0
+      }
+    };
+  },
+  async created() {
+    this.products = await ProductController.fetchProducts();
+  },
+  methods: {
+    async addProduct() {
+      const product = await ProductController.addProduct(this.newProduct);
+      if (product) {
+        this.products.push(product);
+        this.newProduct = { name: '', price: 0 };
+      }
+    },
+    editProduct(product) {
+      this.editing = true;
+      this.editProductData = { ...product };
+    },
+    async updateProduct() {
+      const product = await ProductController.updateProduct(this.editProductData);
+      if (product) {
+        const index = this.products.findIndex(p => p.id === product.id);
+        this.products.splice(index, 1, product);
+        this.cancelEdit();
+      }
+    },
+    async deleteProduct(id) {
+      const success = await ProductController.deleteProduct(id);
+      if (success) {
+        this.products = this.products.filter(product => product.id !== id);
+      }
+    },
+    cancelEdit() {
+      this.editing = false;
+      this.editProductData = { id: null, name: '', price: 0 };
+    }
+  }
+};
+</script>
+8. Main App Component
+src/App.vue ဖိုင်ကို အောက်ပါအတိုင်း ပြင်ဆင်ပါမယ်။
+
+vue
+Copy
+<template>
+  <div id="app">
+    <router-view />
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'App'
+};
+</script>
+9. Testing Results
+Create (Add Product): Form မှာ name နဲ့ price ထည့်ပြီး "Add Product" button ကို နှိပ်ပါက product list မှာ ထပ်ပေါင်းလာပါမယ်။
+
+Read (Fetch Products): Page load ဖြစ်တာနဲ့ product list ကို fetch လုပ်ပြီး ပြပေးပါမယ်။
+
+Update (Edit Product): Edit button ကို နှိပ်ပြီး product data ကို update လုပ်နိုင်ပါတယ်။
+
+Delete (Delete Product): Delete button ကို နှိပ်ပါက product list ထဲက product ကို ဖျက်ပေးပါမယ်။
+
+
+
+
+command:
+npm run serve
+
+ http://localhost:8080 မှာ Vue app ကို စမ်းသပ်နိုင်ပါပြီ။
+
+JSON Server ကို http://localhost:3000 မှာ run ထားဖို့ လိုအပ်ပါတယ်။
+command:
+json-server db.json
+
+
+
+
+
+
+
