@@ -1,0 +1,57 @@
+<template>
+  <div class="container my-2"> 
+    <div class="row">
+      <div class="col-lg-6 text-center p-5">
+        <i class="fa fa-pencil" style="font-size:100px"></i>
+         </div>
+      <div class="col-lg-4"> 
+        <div>
+      <h1>Register</h1>
+      <form @submit.prevent="register">
+        <input v-model="username" class="form-control mb-3" placeholder="Username" />
+        <input v-model="email" class="form-control mb-3" placeholder="Email" />
+        <input v-model="password" class="form-control mb-3" type="password" placeholder="Password" />
+        <button type="submit" class="btn btn-primary mb-3"><i class="fa fa-save"></i> Register</button>
+      </form>
+      <p>{{ message }}</p>
+    </div>
+
+      </div>
+
+    </div>
+   
+  </div>
+  </template>
+  
+  <script>
+  import axios from 'axios';
+  
+  export default {
+    data() {
+      return {
+        username: '',
+        email:'',
+        password: '',
+        message: '',
+      };
+    },
+    methods: {
+      async register() {
+        try {
+          const res=await axios.post('http://localhost:3000/api/auth/register', {
+            username: this.username,
+            email:this.email,
+            password: this.password,
+          });
+
+          localStorage.setItem('token',res.data.token);
+          this.$router.push('/profile');
+          //this.message = 'Registration successful!';
+        } catch (error) {
+          this.message = 'Registration failed!';
+        }
+      },
+    },
+  };
+  </script>
+  

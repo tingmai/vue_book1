@@ -1,0 +1,52 @@
+<template>
+    <div class="container my-2">
+      <div class="row"> 
+      <div class="col-lg-6 text-center p-5"> 
+        <i class="fa fa-user-circle" style="font-size:100px;"></i>
+      </div>
+      <div class="col-lg-6 text-center p-5"> 
+      <h1>User Login</h1>
+      <form @submit.prevent="login">
+       
+        <input v-model="email" class="form-control mb-3" placeholder="Email" />
+        <input v-model="password" class="form-control mb-3" type="password" placeholder="Password" />
+        <button type="submit" class="btn btn-primary"><i class="fa fa-sign-in"></i> Login</button>
+      </form>
+      <p>{{ message }}</p>
+    </div>
+    </div>
+  </div>
+  </template>
+  
+  <script>
+  import axios from 'axios';
+  
+  export default {
+    data() {
+      return {
+       
+        email:'',
+        password: '',
+       
+      };
+    },
+    methods: {
+      async login() {
+        try {
+          const res=await axios.post('http://localhost:3000/api/auth/login', {
+          
+            email:this.email,
+            password: this.password,
+          });
+
+           localStorage.setItem('token',res.data.token);
+          this.$router.push('/profile');
+
+        } catch (error) {
+          this.message = 'Login failed!';
+        }
+      },
+    },
+  };
+  </script>
+  

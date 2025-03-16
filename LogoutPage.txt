@@ -1,0 +1,24 @@
+<template>
+    <div class="container my-4">
+      <h1>Logout Page </h1>
+      <button @click="logout">Logout</button>
+    </div>
+  </template>
+  
+  <script>
+
+  
+  export default {
+    
+    methods: {
+
+        logout() {
+        localStorage.removeItem('token');
+        this.$router.push('/login');
+        },
+    },
+      
+ 
+  };
+  </script>
+  
